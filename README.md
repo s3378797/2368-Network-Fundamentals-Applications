@@ -1,3 +1,8 @@
+
+A better readable version
+
+http://s3378797.github.io/2368-Network-Fundamentals-Applications/
+
 2368-Network-Fundamentals-Applications
 
 
