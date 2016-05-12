@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>2368-network-fundamentals-applications by s3378797</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">2368-network-fundamentals-applications</h1>
+      <h2 class="project-tagline">Network Commands Challenge</h2>
+      <a href="https://github.com/s3378797/2368-Network-Fundamentals-Applications" class="btn">View on GitHub</a>
+      <a href="https://github.com/s3378797/2368-Network-Fundamentals-Applications/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/s3378797/2368-Network-Fundamentals-Applications/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><strong>### 2368-Network-Fundamentals-Applications</strong></p>
+
+<p>*<em># Network Commands Challenge *</em></p>
+
+<p><strong>These are the answers to the challenge 2 questions, they were researched and answered by me. They could contain erroes, so please only use them as references and use at your own risks. :p</strong></p>
+
+<p><strong>1. Find the IP address the computer you are currently using.</strong></p>
+
+<p><em># ifconfig</em></p>
+
+<p><strong>2. Find the IP address the computer you are currently using, plus MAC address, plus whether DHCP is turned on.</strong></p>
+
+<p><em># Plug in another network card see if the card can be assigned with an IP address. If not, could be using static IP addresses.</em></p>
+
+<p><strong>3. Release and restore a DHCP connection for the LAN.</strong></p>
+
+<p><em># Release DHCP addr: dhclient -r (eth0); connect to internet again</em></p>
+
+<p><em># Restore DHCP addr: dhclient -4; ifconfig;</em></p>
+
+<p><strong>4. Display the host name of the computer &amp; be able to use the GUI to change it.</strong></p>
+
+<p><em># hostname; hostname newname; or etc/hostname</em></p>
+
+<p><strong>5. Check for basic IP connectivity between two computers by name and IP address.</strong></p>
+
+<p><em># nmap -sP 192.168.201.1-254; or ; arp -a;</em></p>
+
+<p><strong>6. Quickly access one or two other computers using a command, now display the MAC to IP address of those computers.</strong></p>
+
+<p><em># arp dstIPaddress</em></p>
+
+<p><strong>7. Show the MAC address of the host without using ipconfig.</strong></p>
+
+<p><em># netstat -i;</em></p>
+
+<p><strong>8. Show what shared resource are available on the host.</strong></p>
+
+<p><em># smbtree</em></p>
+
+<p><em># smbclient -L localhost</em></p>
+
+<p><em># net rpc share</em></p>
+
+<p><strong>9. Show what user accounts are available on the host.</strong></p>
+
+<p><em># cat /etc/passwd</em></p>
+
+<p><em># cat /etc/passwd | grep -v nologin</em></p>
+
+<p><strong>10.Show what hosts are currently connected to a computer.</strong></p>
+
+<p><em># netstat -tn</em></p>
+
+<p><em># netstat -tn 2&gt;/dev/null</em></p>
+
+<p><strong>11.Find out which ports on your host are connected to applications. Connect the browser to some external web page before running the appropriate command.</strong></p>
+
+<p><em># netstat -tulpn</em></p>
+
+<p><strong>12.Someone claims there is a lot of corrupted packets on the network. How can this be checked?</strong></p>
+
+<p><em># netstat -s | grep segments</em></p>
+
+<p><em># netstat -s</em></p>
+
+<p><strong>13.Find all other hosts available on the network.</strong></p>
+
+<p><em># nmap -sP 192.168.201.1-254; or ; arp -a;</em></p>
+
+<p><strong>14.Select one host and find what ports they have open.</strong></p>
+
+<p><em># nmap -T5 192.168.201.*</em></p>
+
+<p><strong>15.Find the path to the domain name server.</strong></p>
+
+<p><em># dig +trace google</em></p>
+
+<p><em># dig +trace +short google</em></p>
+
+<p><strong>16.Show the address of the gateway.</strong></p>
+
+<p><em># route -n</em></p>
+
+<p><em># netstat -r -n</em></p>
+
+<p><strong>17.Find the path of routers to <a href="http://www.google.com">www.google.com</a> ( note this may be a problem within RMIT).</strong></p>
+
+<p><em># tcptraceroute google.com</em></p>
+
+<p><strong>18.One host on the network has gone berserk and is flooding the network with packets. How would you detect which host is responsible? Use ping with continuous send to simulate this.</strong></p>
+
+<p><em># Below is the wireshark filter command.</em>
+<em>#  _
+_# (not icmp.resp_in and icmp.type==8)</em></p>
+
+<p><strong>19.Some fool is using Telnet which does not encode passwords. How can you spy on the Telnet transactions?</strong></p>
+
+<p>_# Found two ways to do it. _</p>
+
+<p><em># tcpdump port http or port ftp or port smtp or port imap or port pop3 -l -A | egrep -i 'pass=|pwd=|log=|login=|user=|username=|pw=|passw=|passwd=|password=|pass:|user:|username:|password:|login:|pass |user ' --color=auto --line-buffered -B20</em></p>
+
+<p><em>#     #!/bin/bash</em></p>
+
+<p><em>#     #</em>
+<em>#     # tcptelnet.sh - extract password and session information tcpdump</em>
+<em>#     #</em>
+<em>#     # 2008 - Mike Golvach - <a href="mailto:eggi@comcast.net">eggi@comcast.net</a></em>
+<em>#     #</em>
+<em>#     # Creative Commons Attribution-Noncommercial-Share Alike 3.0 United States License</em>
+<em>#     #</em></p>
+
+<p><em>#     login_or_pwd=0</em>
+<em>#     sess_info=0</em></p>
+
+<p><em>#     while read line</em>
+<em>#     do</em>
+<em>#             echo $line| grep "Last" &gt;/dev/null 2&gt;&amp;1</em>
+<em>#             ll_yes_or_no=$?</em>
+<em>#             if [ $ll_yes_or_no -eq 0 ]</em>
+<em>#             then</em>
+<em>#                     echo</em>
+<em>#                     login_or_pwd=0</em>
+<em>#                     continue</em>
+<em>#             fi</em>
+<em>#             echo $line| grep "gin:" &gt;/dev/null 2&gt;&amp;1</em>
+<em>#             l_yes_or_no=$?</em>
+<em>#             if [ $l_yes_or_no -eq 0 ]</em>
+<em>#             then</em>
+<em>#                     echo</em>
+<em>#                     echo "Possible login ID to follow: "</em>
+<em>#                     login_or_pwd=1</em>
+<em>#                     sess_info=0</em>
+<em>#                     continue</em>
+<em>#             fi</em>
+<em>#             echo $line| grep "sword" &gt;/dev/null 2&gt;&amp;1</em>
+<em>#             p_yes_or_no=$?</em>
+<em>#             if [ $p_yes_or_no -eq 0 ]</em>
+<em>#             then</em>
+<em>#                     echo</em>
+<em>#                     echo "Possible password to follow: "</em>
+<em>#                     login_or_pwd=1</em>
+<em>#                     sess_info=0</em>
+<em>#                     continue</em>
+<em>#             fi</em>
+<em>#             if [ $login_or_pwd -eq 1 ]</em>
+<em>#             then</em>
+<em>#                     echo $line|awk '{ if ( $NF ~ /UUUUU$/ ) print $NF }'|sed 's/^.*(.)UUUUU$/\1/'|sed 's/^U/./' |xargs -ivar echo "var\c"</em>
+<em>#                     continue</em>
+<em>#             fi</em>
+<em>#             if [ $login_or_pwd -eq 0 -a $sess_info -eq 0 ]</em>
+<em>#             then</em>
+<em>#                     echo</em>
+<em>#                     echo "Possible session info to follow:"</em>
+<em>#                     sess_info=1</em>
+<em>#             fi</em>
+<em>#             if [ $sess_info -eq 1 ]</em>
+<em>#             then</em>
+<em>#                     echo $line|awk '{ if ( $NF ~ /UUUUU$/ ) print $NF }'|sed 's/^.*(.)UUUUU$/\1/'|sed 's/^U/./' |xargs -ivar echo "var\c"</em>
+<em>#                     continue</em>
+<em>#             fi</em>
+<em>#     done</em>
+<em>#     echo</em>
+<em>#     exit 0</em></p>
+
+<p><strong>20.A ping to 192.168.0.2 works but a ping to the machine's name "reds_machine" fails.</strong>
+<strong>What could be wrong?</strong></p>
+
+<p><em># Hosts File</em></p>
+
+<p><em># The host name in the Hosts file or in the command is misspelled.</em></p>
+
+<p><em># The IP address for the host name in the Hosts file is invalid or incorrect.</em></p>
+
+<p><em># DNS Server</em></p>
+
+<p><em>#     The client contacts the DNS name server with a recursive query for name.reskit.com. The server must now return the answer or an error message.</em></p>
+
+<p><em>#     The DNS name server checks its cache and zone files for the answer, but doesn't find it. It contacts a server at the root of the Internet (a root DNS server) with an iterative query for name.reskit.com.</em></p>
+
+<p><em>#     The root server doesn't know the answer, so it responds with a referral to an authoritative server in the .com domain.</em></p>
+
+<p><em>#     The DNS name server contacts a server in the .com domain with an iterative query for name.reskit.com.</em></p>
+
+<p><em>#     The server in the .com domain does not know the exact answer, so it responds with a referral to an authoritative server in the reskit.com domain.</em></p>
+
+<p><em>#     The DNS name server contacts the server in the reskit.com domain with an iterative query for name.reskit.com.</em></p>
+
+<p><em>#     The server in the reskit.com domain does know the answer. It responds with the correct IP address.</em></p>
+
+<p><em>#     The DNS name server responds to the client query with the IP address for name.reskit.com.</em></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/s3378797/2368-Network-Fundamentals-Applications">2368-network-fundamentals-applications</a> is maintained by <a href="https://github.com/s3378797">s3378797</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
