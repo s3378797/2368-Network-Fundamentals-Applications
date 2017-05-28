@@ -1,0 +1,266 @@
+>>>> Lab Test:  UDP Alarm System  <<<<<<<
+
+   PROJECT : this lab exam simulates a sensor
+             talking to your alarm analysis code,
+             which in turn must talk to a control
+             room computer, all using UDP.
+
+
+====== Killing any old UDP bindings.
+                Ignore up to 3 'FAILED' messages.
+   
+
+
+
+
+
+ ======== Your code, see test and marks after code =======
+
+
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cstdlib>
+#include <string.h>
+#include <stdio.h>
+#include "UDP_class.h"
+
+using namespace std;
+
+stringstream  stst;
+string        strg ;
+
+int cpp_do_ousb_command(string  *strg) //===========
+{ FILE *fpipe ;
+  if ( !(fpipe = (FILE*)popen(strg->c_str(),"r")))
+   { cout << "pipe error" << endl ;
+     exit(0) ;
+   }
+  char line[100] ;
+  fgets( line, sizeof line, fpipe) ;
+  pclose(fpipe) ;
+  *strg = line ;        // caller can see returned text in strg.
+  return( atoi(line)) ; // return int version of string.
+}
+
+//====== MAIN ==========================================================
+
+int main(int argc, char *argv[])
+{//--- When no command line parameters MUST print id string in CSV format.
+   if (argc == 1)  // no parameters.
+     { cout << "3378797,s3378797@student.rmit.edu.au,YIXUN_LI"
+            << endl ;
+       return(0) ;
+     }
+
+
+    string own_ip = argv[1], control_name = argv[3];
+    int own_port = atoi(argv[2]),  control_port = atoi(argv[4]);
+    int temp_limit = atoi(argv[5]), ousb_LED  = atoi(argv[6]);
+    int rousb = 0, LEDon = 0, LEDoff = 0;
+
+    stst.clear() ;         // clears control flags.
+    stst.str("");          // set initial contents.
+    strg = "ousb -r io portb " ;    // create command.
+    rousb = cpp_do_ousb_command( &strg) ;    // execute command.
+
+
+
+    LEDoff = ousb_LED &~(1 << rousb) ;
+    LEDon = ousb_LED | (1 << rousb) ;
+
+   stst.clear() ;         // clears control flags.
+   stst.str("");          // set initial contents.
+   stst << "ousb -r io portb " << LEDoff ; // create command
+   strg = stst.str() ;              // get command into strg
+   cpp_do_ousb_command( &strg) ;
+
+
+   Tudp_handler rx_udp( own_ip, own_port) ;
+   //--- start listener
+
+   if (rx_udp.wait_receive_udp () )
+     {//--- got an error
+        cout << "   Send error: " << rx_udp.error_message << endl << endl ;
+        return(-1) ;
+     }
+   else
+   {cout << "RX" << endl ;}
+
+
+   string buffer1 = "";
+   int buffer2 = 0;
+
+   stst.clear() ;         // clears control flags.
+   stst.str("");          // set initial contents.
+    stst.str(rx_udp.rcv_str) ;
+   stst >> buffer1 >> buffer2;
+
+   if(buffer2 > temp_limit)
+   {
+     cout << "OVER" << endl ;
+
+   stst.clear() ;         // clears control flags.
+   stst.str("");          // set initial contents.
+    stst << "ousb -r io portb " << LEDon ; // create command
+   strg = stst.str() ;              // get command into strg
+   cpp_do_ousb_command( &strg) ;
+
+
+
+
+      stst.clear() ;         // clears control flags.
+      stst.str("");          // set initial contents.
+      stst << "TEMP_ALARM " << buffer1 ; // create command
+      string  MESSAGE = stst.str() ;              // get command into strg
+
+    Tudp_handler tx_udp( control_name, control_port) ;
+       //--- start talker
+
+   tx_udp.send_str = MESSAGE ;
+   if ( tx_udp.send_udp() )
+     {//--- got an error
+        cout << "   Send error: " << tx_udp.error_message << endl ;
+        return(-1) ;
+     }
+     return(-1) ;
+
+
+  }
+  else
+  {
+       stst.clear() ;         // clears control flags.
+           stst.str("");          // set initial contents.
+           stst << "ousb -r io portb " << LEDoff ; // create command
+           strg = stst.str() ;              // get command into strg
+           cpp_do_ousb_command( &strg) ;
+           return(-1) ;
+
+
+
+  }
+
+
+
+   return(0) ;
+}
+
+
+
+
+============ Start of Testing ================
+
+
+
+
+========== Compile code, get student ID ==========
+Accepted student id(s) are-
+  stud id: 3378797,  s3378797@student.rmit.edu.au
+             YIXUN_LI
+
+
+
+========== Category: Test OUSB Initializations ============
+
+---------------------- OUSB initialize 1 ----------------------------
+
+   Set portb to 255, all LEDs on.
+   Run ./your_code  127.0.0.1 55555 127.0.0.5 44444 120 0
+   *** INCORRECTLY failed to reset just LED0 on start up.
+
+
+
+---------------------- OUSB initialize 2 ----------------------------
+
+   Set portb to 255, all LEDs on.
+   Run ./your_code  127.0.0.1 55555 127.0.0.5 44444 120 7
+   *** INCORRECTLY failed to reset just LED7 on start up.
+
+
+
+========== Category: Reception of UDP ============
+
+---------------------- Print RX well under limit ----------------------------
+
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 120 0
+   talker 127.0.0.1 55555 'x2 030'
+   Printed out 'RX' on packet reception.
+
+
+
+
+---------------------- Print RX just under limit----------------------------
+
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 150 0
+   talker 127.0.0.1 55555  'x2 149'
+   Printed out 'RX' on packet reception.
+
+
+
+
+---------------------- Print RX just onlimit----------------------------
+
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 150 0
+   talker 127.0.0.1 55555  'x2 150'
+   Printed out 'RX' on packet reception.
+
+
+
+
+---------------------- Print OVER well over limit ----------------------------
+
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 150 0
+   talker 127.0.0.1 55555  'x2 300'
+   Printed out 'RX OVER' on packet reception.
+
+
+
+
+---------------------- Print OVER just overlimit ----------------------------
+
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 150 0
+   talker 127.0.0.1 55555 'x2 151'
+   Printed out 'RX OVER' on packet reception.
+
+
+
+
+---------------------- LED set if over limit 1 ----------------------------
+
+   Set LEDs to 128 initially.
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 150 6
+   talker 127.0.0.1 55555 't2 300'
+   *** INCORRECTLY failed to set just LED6 to one on over temperature.
+
+
+
+
+---------------------- LED set if over limit 2 ----------------------------
+
+   Set LEDs to 255 initially, then 0 after your_code started.
+   ./your_code 127.0.0.1 55555 127.0.0.5 44444 150 3
+   talker 127.0.0.1 55555 't2 300'
+   *** INCORRECTLY failed to set just LED3 to one on over temperature.
+
+
+
+========== Category: Sending UDP Alarm ============
+
+---------------------- Send to listener if over limit ----------------------------
+
+   ./your_code 127.0.0.1 55555 127.0.0.5 44441 150 0
+   talker    127.0.0.1 55555 'd2 300'
+   listener 127.0.0.5 44441
+   Correctly sent 'TEMP_ALARM d2' to listener.
+
+
+
+
+
+PASSED 6/ 10 tests, failed 4/ 10 tests, ( 60% pass).
+
+MARKS gained 26/ 42, 61%.
+
+   Test start time : 13:33:30  Monday  25/04/2016
+
